@@ -3,12 +3,18 @@ package com.markus.mybatis.test.demo;
 import com.markus.mybatis.binding.MapperProxy;
 import com.markus.mybatis.binding.MapperProxyFactory;
 import com.markus.mybatis.binding.MapperRegistry;
+import com.markus.mybatis.io.Resources;
 import com.markus.mybatis.session.SqlSession;
 import com.markus.mybatis.session.SqlSessionFactory;
+import com.markus.mybatis.session.SqlSessionFactoryBuilder;
 import com.markus.mybatis.session.defaults.DefaultSqlSessionFactory;
 import com.markus.mybatis.test.dao.IUserDao;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,16 +27,20 @@ import java.util.Map;
  */
 public class TestDemo {
 
-    @Test
-    public void test_MapperProxyFactory() {
-        MapperRegistry registry = new MapperRegistry();
-        registry.addMappers("com.markus.mybatis.test.dao");
+    private Logger logger = LoggerFactory.getLogger(TestDemo.class);
 
-        SqlSessionFactory sqlSessionFactory = new DefaultSqlSessionFactory(registry);
+    @Test
+    public void test_MapperProxyFactory() throws IOException {
+        // 1. 从 SqlSessionFactory 中获取 SqlSession
+        Reader reader = Resources.getResourceAsReader("mybatis-config-datasource.xml");
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
         SqlSession sqlSession = sqlSessionFactory.openSession();
 
+        // 2. 获取映射器对象
         IUserDao userDao = sqlSession.getMapper(IUserDao.class);
-        String markusZhang = userDao.queryUserName("markus zhang");
-        System.out.println("测试结果: " + markusZhang);
+
+        // 3. 测试验证
+        String res = userDao.queryUserInfoById("markus zhang");
+        logger.info("测试结果: {}", res);
     }
 }

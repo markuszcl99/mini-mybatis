@@ -1,6 +1,7 @@
 package com.markus.mybatis.binding;
 
 import cn.hutool.core.lang.ClassScanner;
+import com.markus.mybatis.session.Configuration;
 import com.markus.mybatis.session.SqlSession;
 
 import java.util.HashMap;
@@ -15,6 +16,11 @@ import java.util.Set;
  * It's my honor to share what I've learned with you!
  */
 public class MapperRegistry {
+
+    private Configuration configuration;
+    public MapperRegistry(Configuration configuration) {
+        this.configuration = configuration;
+    }
 
     private final Map<Class<?>, MapperProxyFactory<?>> knownMappers = new HashMap<>();
 
